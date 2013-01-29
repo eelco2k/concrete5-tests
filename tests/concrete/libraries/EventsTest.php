@@ -43,7 +43,7 @@ class EventsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testGetInstance() {
 		$events = Events::getInstance();
-		$this->assertInstanceOf('Events', $events);
+		$this->assertInstanceOf('Concrete5_Library_Events', $events);
 	}
 
 	/**
