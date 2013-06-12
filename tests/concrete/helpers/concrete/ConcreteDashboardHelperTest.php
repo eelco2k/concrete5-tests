@@ -15,7 +15,7 @@ class ConcreteDashboardHelperTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new ConcreteDashboardHelper;
+        $this->object = Loader::helper('concrete/dashboard');
     }
 
     /**
@@ -25,6 +25,12 @@ class ConcreteDashboardHelperTest extends PHPUnit_Framework_TestCase {
     protected function tearDown() {
         
     }
+	 public function testClasses() {
+		 $this->assertTrue($this->object instanceof ConcreteDashboardHelper);
+		 $this->assertTrue(class_exists('ConcreteDashboardMenu'));
+		 $this->assertTrue(class_exists('ConcreteDashboardDefaultMenu'));
+	 }
+
 
     /**
      * @covers ConcreteDashboardHelper::canRead

@@ -15,7 +15,7 @@ class ConcreteUserHelperTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new ConcreteUserHelper;
+        $this->object = Loader::helper('concrete/user');
     }
 
     /**
@@ -26,6 +26,9 @@ class ConcreteUserHelperTest extends PHPUnit_Framework_TestCase {
         
     }
 
+	 public function testObjectClass() {
+		 $this->assertTrue($this->object instanceof ConcreteUserHelper);
+	 }
     /**
      * @covers ConcreteUserHelper::getOnlineNow
      * @todo   Implement testGetOnlineNow().

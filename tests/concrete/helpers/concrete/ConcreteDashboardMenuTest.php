@@ -15,8 +15,18 @@ class ConcreteDashboardMenuTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new ConcreteDashboardMenu;
+        $this->object = Loader::helper('concrete/dashboard');
     }
+
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     */
+	 public function testClasses() {
+		 $this->assertTrue($this->object instanceof ConcreteDashboardHelper);
+		 $this->assertTrue(class_exists('ConcreteDashboardMenu'));
+		 $this->assertTrue(class_exists('ConcreteDashboardDefaultMenu'));
+	 }
 
     /**
      * Tears down the fixture, for example, closes a network connection.

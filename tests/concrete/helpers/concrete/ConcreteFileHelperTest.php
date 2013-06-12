@@ -15,7 +15,7 @@ class ConcreteFileHelperTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-		$this->object = Loader::helper('file');
+		$this->object = Loader::helper('concrete/file');
     }
 
     /**
@@ -30,8 +30,8 @@ class ConcreteFileHelperTest extends PHPUnit_Framework_TestCase {
 	 * Verifies that the loader returned the correct object
 	*/
 	public function testObjectCreated() {
-		$this->assertTrue($this->object instanceof FileHelper);
-		$this->assertTrue($this->object instanceof Concrete5_Helper_File);
+		$this->assertTrue($this->object instanceof ConcreteFileHelper);
+		//$this->assertTrue($this->object instanceof Concrete5_Helper_File);
 	}
 
     /**

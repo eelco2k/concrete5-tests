@@ -15,7 +15,7 @@ class ConcreteInterfaceHelperTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new ConcreteInterfaceHelper;
+        $this->object = Loader::helper('concrete/interface');
     }
 
     /**
@@ -26,6 +26,9 @@ class ConcreteInterfaceHelperTest extends PHPUnit_Framework_TestCase {
         
     }
 
+	 public function testObjectClass() {
+		 $this->assertTrue($this->object instanceof ConcreteInterfaceHelper);
+	 }
     /**
      * @covers ConcreteInterfaceHelper::submit
      * @todo   Implement testSubmit().

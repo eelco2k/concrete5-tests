@@ -15,7 +15,7 @@ class ConcreteInterfaceHelpHelperTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new ConcreteInterfaceHelpHelper;
+        $this->object = Loader::helper('concrete/interface/help');
     }
 
     /**
@@ -25,6 +25,10 @@ class ConcreteInterfaceHelpHelperTest extends PHPUnit_Framework_TestCase {
     protected function tearDown() {
         
     }
+
+	 public function testObjectClass() {
+		 $this->assertTrue($this->object instanceof ConcreteInterfaceHelpHelper);
+	 }
 
     /**
      * @covers ConcreteInterfaceHelpHelper::getBlockTypes

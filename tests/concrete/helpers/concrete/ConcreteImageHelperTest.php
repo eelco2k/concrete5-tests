@@ -15,7 +15,7 @@ class ConcreteImageHelperTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new ConcreteImageHelper;
+		 $this->object = Loader::helper('concrete/image');
     }
 
     /**
@@ -25,6 +25,9 @@ class ConcreteImageHelperTest extends PHPUnit_Framework_TestCase {
     protected function tearDown() {
         
     }
+	 public function testObjectClass() {
+		 $this->assertTrue($this->object instanceof ConcreteImageHelper);
+	 }
 
     /**
      * @covers ConcreteImageHelper::determineImageScale

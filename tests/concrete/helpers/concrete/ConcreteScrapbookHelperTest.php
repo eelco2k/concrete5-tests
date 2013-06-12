@@ -15,7 +15,7 @@ class ConcreteScrapbookHelperTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new ConcreteScrapbookHelper;
+        $this->object = Loader::helper('concrete/scrapbook');
     }
 
     /**
@@ -26,6 +26,9 @@ class ConcreteScrapbookHelperTest extends PHPUnit_Framework_TestCase {
         
     }
 
+	 public function testObjectClass() {
+		 $this->assertTrue($this->object instanceof ConcreteScrapbookHelper);
+	 }
     /**
      * @covers ConcreteScrapbookHelper::getPersonalScrapbookName
      * @todo   Implement testGetPersonalScrapbookName().

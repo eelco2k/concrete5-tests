@@ -15,13 +15,16 @@ class ConcreteUrlsHelperTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new ConcreteUrlsHelper;
+        $this->object = Loader::helper('concrete/urls');
     }
 
     /**
      * Tears down the fixture, for example, closes a network connection.
      * This method is called after a test is executed.
      */
+	 public function testObjectClass() {
+		 $this->assertTrue($this->object instanceof ConcreteUrlsHelper);
+	 }
     protected function tearDown() {
         
     }

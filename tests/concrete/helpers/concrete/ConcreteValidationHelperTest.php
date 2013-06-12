@@ -1,7 +1,5 @@
 <?php
 
-require_once dirname(__FILE__) . '/../../../../web/concrete/helpers/concrete/validation.php';
-
 class ConcreteValidationTest extends PHPUnit_Framework_TestCase {
 
     /**
@@ -14,7 +12,7 @@ class ConcreteValidationTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new ConcreteValidationHelper;
+        $this->object = Loader::helper('concrete/validation');
     }
 
     /**
@@ -24,6 +22,10 @@ class ConcreteValidationTest extends PHPUnit_Framework_TestCase {
     protected function tearDown() {
         
     }
+
+	 public function testObjectClass() {
+		 $this->assertTrue($this->object instanceof ConcreteValidationHelper);
+	 }
 
     public function testPassword() {
         $false = array();

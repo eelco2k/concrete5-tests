@@ -8,14 +8,14 @@ class ConcreteDashboardDefaultMenuTest extends PHPUnit_Framework_TestCase {
     /**
      * @var ConcreteDashboardDefaultMenu
      */
-    protected $object;
+	 protected $object;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new ConcreteDashboardDefaultMenu;
+        $this->object = Loader::helper('concrete/dashboard');
     }
 
     /**
@@ -25,5 +25,11 @@ class ConcreteDashboardDefaultMenuTest extends PHPUnit_Framework_TestCase {
     protected function tearDown() {
         
     }
+	 public function testClasses() {
+		 $this->assertTrue($this->object instanceof ConcreteDashboardHelper);
+		 $this->assertTrue(class_exists('ConcreteDashboardMenu'));
+		 $this->assertTrue(class_exists('ConcreteDashboardDefaultMenu'));
+	 }
+
 
 }
