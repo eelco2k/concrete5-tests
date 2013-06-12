@@ -25,7 +25,7 @@ class PageTest extends PHPUnit_Framework_TestCase {
 		Loader::model('page');
 		Loader::model('collection_types');
 		$ct = CollectionType::getByHandle('left_sidebar'); //everything's got a default..
-		$this->assertTrue($ct instanceof CollectionType); //kind of weird to check this but hey
+		$this->assertInstanceOf('CollectionType', $ct); //kind of weird to check this but hey
 
 		$home = Page::getByID(HOME_CID);
 		$pageName = "My Cool Page";
@@ -43,7 +43,7 @@ class PageTest extends PHPUnit_Framework_TestCase {
 
 		$parentID = $newPage->getCollectionParentID();
 
-		$this->assertTrue($newPage instanceof Page);
+		$this->assertInstanceOf('Page',$newPage);
 		$this->assertEquals($parentID, HOME_CID);
 
 		$this->assertSame($pageName,$newPage->getCollectionName());
@@ -53,22 +53,26 @@ class PageTest extends PHPUnit_Framework_TestCase {
 
 	public function testMovePage() {
 		$page = Page::getByPath('/page');
-		$this->assertTrue($page instanceof Page);
+		$this->assertInstanceOf('Page',$page);
 
 		$newParent = Page::getByPath('/about');
-		$this->assertTrue($page instanceof Page);
+		$this->assertNotEquals(COLLECTION_NOT_FOUND,$newParent->error);
+
+		$parentCID = $newParent->getCollectionID();
 
 
 		$page->move($newParent);
 
 		$path = $page->getCollectionPath();
-
 		$this->assertSame('/about/page', $path);
+
+		$this->assertSame($parentCID, $page->getCollectionParentID());
+
 	}
 
 	public function testTrashPage() {
 		$page = Page::getByPath('/page');
-		$this->assertTrue($page instanceof Page);
+		$this->assertInstanceOf('Page',$page);
 		$page->moveToTrash();
 
 		$this->assertTrue($page->isInTrash());
