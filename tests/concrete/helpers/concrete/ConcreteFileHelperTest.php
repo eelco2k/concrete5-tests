@@ -30,8 +30,8 @@ class ConcreteFileHelperTest extends PHPUnit_Framework_TestCase {
 	 * Verifies that the loader returned the correct object
 	*/
 	public function testObjectCreated() {
-		$this->assertTrue($this->object instanceof FileHelper);
-		$this->assertTrue($this->object instanceof Concrete5_Helper_File);
+		$this->assertInstanceOf('FileHelper', $this->object);
+		$this->assertInstanceOf('Concrete5_Helper_File', $this->object);
 	}
 
     /**
