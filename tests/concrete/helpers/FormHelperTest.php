@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . '/../../../web/concrete/helpers/form.php';
+//require_once dirname(__FILE__) . '/../../../web/concrete/helpers/form.php';
 
 /**
  * Test class for FormHelper.
@@ -18,7 +18,8 @@ class FormHelperTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new FormHelper;
+        //$this->object = new FormHelper;
+		  $this->object = Loader::helper('form');
     }
 
     /**
