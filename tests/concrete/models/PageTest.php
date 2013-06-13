@@ -1,26 +1,71 @@
 <?php
+
 class PageTest extends PHPUnit_Framework_TestCase {
-   //protected $object;
+	protected $pageAdd;
+	protected $pageMove;
+	//protected $pageMoveStart;
+	protected $pageMoveStop;
+	protected $pageTrash;
+	protected $pageDelete;
+	//protected $pageData;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-	//could probably add like, three pages here under home and then just test on
-	//the individual pages in the test functions below
-	//then delete them on clean up.
-   //protected function setUp() {
-			//doesn't make sense for a model.
-			//suppose we could set up a small tree in here to work on .
-		  //$this->object = Loader::model('page');
-    //}
+	function makePages(){
+		Loader::model('page');
+		Loader::model('collection_types');
+		$ct = CollectionType::getByHandle('left_sidebar'); //everything's got a default..
+		$home = Page::getByID(HOME_CID);
+	
+		//keeping track of this stuff should be unnecessary.
+		// but leaving it here in case
+		//self::pageData['pageMove'] = array(
+			//'uID'=>1,
+			//'cName'=>"This is moving",
+			//'cHandle'=>'page_move'
+		//);
+		//$home->add($ct, self::pageData['pageMove']);
 
-	//doesn't really make any sense in this context because pages don't do much unless they're gotten.
-	//public function testObjectCreated() {
-		//$this->assertTrue($this->object instanceof Page);
-		//$this->assertTrue($this->object instanceof Concrete5_Model_Page);
-	//}
+		$this->pageMove = $home->add($ct,array(
+			'uID'=>1,
+			'cName'=>"This is moving",
+			'cHandle'=>'page_move'
+		));
 
+		//self::pageMoveStart = $home->add($ct,array(
+			//'uID'=>1,
+			//'cName'=>"Origin",
+			//'cHandle'=>'origin'
+		//));
+		$this->pageMoveStop = $home->add($ct,array(
+			'uID'=>1,
+			'cName'=>"Destination",
+			'cHandle'=>'destination'
+		));
+
+		$this->pageTrash = $home->add($ct,array(
+			'uID'=>1,
+			'cName'=>"Going to trash",
+			'cHandle'=>'page_trash'
+		));
+
+		$this->pageDelete = $home->add($ct,array(
+			'uID'=>1,
+			'cName'=>"Deleting this",
+			'cHandle'=>'page_delete'
+		));
+	}
+
+	function __destruct() {
+		$this->pageAdd->delete();
+		$this->pageMove->delete();
+		$this->pageMoveStop->delete();
+      $this->pageTrash->delete();
+		parent::__destruct();
+	}
+
+	//this one actually has two tests in it:
+	// - does the page fail for bad adds
+	// - does it pass for good ones.
+	// it should be its own test when the suite gets built, maybe.
 	public function testAddPage() {
 		Loader::model('page');
 		Loader::model('collection_types');
@@ -32,58 +77,65 @@ class PageTest extends PHPUnit_Framework_TestCase {
 		$pageHandle = 'page'; //this tests that page handles will be set as the page handle.
 			//The actual add function does some transforms on the handles if they are not
 			//set.
+		
+		$badPage = Page::getByID(42069);
+		try {
+			$this->pageAdd = $badPage->add($ct,array(
+				'uID'=>1,
+				'cName'=>$pageName,
+				'cHandle'=>$pageHandle
+			));
+		} catch(Exception $e) {
+			$caught = true;
+		}
 
-		$data = array(
+		if(!$caught) {
+			$this->fail('Added a page to a non-page');
+		}
+
+		$this->pageAdd = $home->add($ct,array(
 			'uID'=>1,
 			'cName'=>$pageName,
 			'cHandle'=>$pageHandle
-		);
-			
-		$newPage = $home->add($ct,$data);
+		));
 
-		$parentID = $newPage->getCollectionParentID();
+		$parentID = $this->pageAdd->getCollectionParentID();
 
-		$this->assertInstanceOf('Page',$newPage);
+		$this->assertInstanceOf('Page',$this->pageAdd);
 		$this->assertEquals($parentID, HOME_CID);
 
-		$this->assertSame($pageName,$newPage->getCollectionName());
-		$this->assertSame($pageHandle, $newPage->getCollectionHandle());
-		$this->assertSame('/'.$pageHandle, $newPage->getCollectionPath());
+		$this->assertSame($pageName,$this->pageAdd->getCollectionName());
+		$this->assertSame($pageHandle, $this->pageAdd->getCollectionHandle());
+		$this->assertSame('/'.$pageHandle, $this->pageAdd->getCollectionPath());
 	}
 
+	/**
+		@depends makePages
+	 */
 	public function testMovePage() {
-		$page = Page::getByPath('/page');
-		$this->assertInstanceOf('Page',$page);
+		$parentCID = $this->pageMoveStop->getCollectionID();
 
-		$newParent = Page::getByPath('/about');
-		$this->assertNotEquals(COLLECTION_NOT_FOUND,$newParent->error);
+		$this->pageMove->move($this->pageMoveStop);
 
-		$parentCID = $newParent->getCollectionID();
+		$parentPath = $this->pageMoveStop->getCollectionPath();
+		$handle = $this->pageMove->getCollectionHandle();
+		$path = $this->pageMove->getCollectionPath();
 
-
-		$page->move($newParent);
-
-		$path = $page->getCollectionPath();
-		$this->assertSame('/about/page', $path);
-
-		$this->assertSame($parentCID, $page->getCollectionParentID());
-
+		$this->assertSame($parentPath.'/'.$handle, $path);
+		$this->assertSame($parentCID, $this->pageMove->getCollectionParentID());
 	}
 
 	public function testTrashPage() {
-		$page = Page::getByPath('/page');
-		$this->assertInstanceOf('Page',$page);
-		$page->moveToTrash();
+		$this->pageTrash->moveToTrash();
 
-		$this->assertTrue($page->isInTrash());
+		$this->assertTrue($this->pageTrash->isInTrash());
 	}
 
 	//this can probably be more thorough
 	public function testDeletePage() {
-		$page = Page::getByPath(TRASH_PAGE_PATH.'/page');
-		$cID = $page->getCollectionID();
+		$cID = $this->pageDelete->getCollectionID();
 
-		$page->delete();
+		$this->pageDelete->delete();
 		$noPage = Page::getByID($cID);
 
 		$this->assertEquals(COLLECTION_NOT_FOUND,$noPage->error); //maybe there is a more certain way to determine this.
