@@ -4,6 +4,22 @@ class PageTest extends PHPUnit_Framework_TestCase {
 	protected $ct;
 	protected $home;
 
+	private function createPage($handle, $name) {
+		Loader::model('page');
+		Loader::model('collection_types');
+		$ct = CollectionType::getByHandle('left_sidebar'); //everything's got a default..
+		$this->assertInstanceOf('CollectionType', $ct); //kind of weird to check this but hey
+
+		$home = Page::getByID(HOME_CID);
+		$page = $home->add($ct,array(
+			'uID'=>1,
+			'cName'=>$name,
+			'cHandle'=>$handle
+		));
+
+		return $page;
+	}
+
 	function pageData(){
 		Loader::model('page');
 		Loader::model('collection_types');
@@ -57,14 +73,12 @@ class PageTest extends PHPUnit_Framework_TestCase {
 		$this->assertSame($pageName,$page->getCollectionName());
 		$this->assertSame($pageHandle, $page->getCollectionHandle());
 		$this->assertSame('/'.$pageHandle, $page->getCollectionPath());
-
-		return $page;
+		$page->delete(); //I suppose this is technically on faith here
 	}
 
-	/**
-		@depends testAddPage
-	 */
-	public function testDeletePage($page) {
+	public function testDeletePage() {
+		$page = $this->createPage('delete_page','Delete This');
+		$this->assertInstanceOf('Page',$page);
 		$cID = $page->getCollectionID();
 
 		$page->delete();
@@ -74,40 +88,25 @@ class PageTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(COLLECTION_NOT_FOUND,$noPage->error); //maybe there is a more certain way to determine this.
 	}
 
-	/**
-		@depends testAddPage
-	 */
-	public function testMovePage($page) {
-		Loader::model('page');
-		Loader::model('collection_types');
-		$ct = CollectionType::getByHandle('left_sidebar'); //everything's got a default..
-		$this->assertInstanceOf('CollectionType', $ct); //kind of weird to check this but hey
+	public function testMovePage() {
+		$page = $this->createPage('move_page',"Move This");
+		$destination = $this->createPage('destination',"Destination");
 
-		$home = Page::getByID(HOME_CID);
-		$pageMoveStop = $home->add($ct,array(
-			'uID'=>1,
-			'cName'=>"Destination",
-			'cHandle'=>'destination'
-		));
+		$parentCID = $destination->getCollectionID();
 
-		$parentCID = $pageMoveStop->getCollectionID();
-
-		$page->move($pageMoveStop);
-
-		$parentPath = $pageMoveStop->getCollectionPath();
+		//$page->move($destination,false);
+		$parentPath = $destination->getCollectionPath();
 		$handle = $page->getCollectionHandle();
 		$path = $page->getCollectionPath();
 
 		$this->assertSame($parentPath.'/'.$handle, $path);
 		$this->assertSame($parentCID, $page->getCollectionParentID());
 		$page->delete();
-		$pageMoveStop->delete();
+		$destination->delete();
 	}
 
-	/**
-		@depends testAddPage
-	 */
-	public function testTrashPage($page) {
+	public function testTrashPage() {
+		$page = $this->createPage('trash_page',"Trash This");
 		$page->moveToTrash();
 
 		$this->assertTrue($page->isInTrash());
