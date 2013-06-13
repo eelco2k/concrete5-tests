@@ -1,65 +1,15 @@
 <?php
 
 class PageTest extends PHPUnit_Framework_TestCase {
-	protected $pageAdd;
-	protected $pageMove;
-	//protected $pageMoveStart;
-	protected $pageMoveStop;
-	protected $pageTrash;
-	protected $pageDelete;
-	//protected $pageData;
+	protected $ct;
+	protected $home;
 
-	function makePages(){
+	function pageData(){
 		Loader::model('page');
 		Loader::model('collection_types');
-		$ct = CollectionType::getByHandle('left_sidebar'); //everything's got a default..
-		$home = Page::getByID(HOME_CID);
-	
-		//keeping track of this stuff should be unnecessary.
-		// but leaving it here in case
-		//self::pageData['pageMove'] = array(
-			//'uID'=>1,
-			//'cName'=>"This is moving",
-			//'cHandle'=>'page_move'
-		//);
-		//$home->add($ct, self::pageData['pageMove']);
-
-		$this->pageMove = $home->add($ct,array(
-			'uID'=>1,
-			'cName'=>"This is moving",
-			'cHandle'=>'page_move'
-		));
-
-		//self::pageMoveStart = $home->add($ct,array(
-			//'uID'=>1,
-			//'cName'=>"Origin",
-			//'cHandle'=>'origin'
-		//));
-		$this->pageMoveStop = $home->add($ct,array(
-			'uID'=>1,
-			'cName'=>"Destination",
-			'cHandle'=>'destination'
-		));
-
-		$this->pageTrash = $home->add($ct,array(
-			'uID'=>1,
-			'cName'=>"Going to trash",
-			'cHandle'=>'page_trash'
-		));
-
-		$this->pageDelete = $home->add($ct,array(
-			'uID'=>1,
-			'cName'=>"Deleting this",
-			'cHandle'=>'page_delete'
-		));
-	}
-
-	function __destruct() {
-		$this->pageAdd->delete();
-		$this->pageMove->delete();
-		$this->pageMoveStop->delete();
-      $this->pageTrash->delete();
-		parent::__destruct();
+		$data['ct'] = CollectionType::getByHandle('left_sidebar'); //everything's got a default..
+		$data['home'] = Page::getByID(HOME_CID);
+		return $data;
 	}
 
 	//this one actually has two tests in it:
@@ -80,7 +30,7 @@ class PageTest extends PHPUnit_Framework_TestCase {
 		
 		$badPage = Page::getByID(42069);
 		try {
-			$this->pageAdd = $badPage->add($ct,array(
+			$page = $badPage->add($ct,array(
 				'uID'=>1,
 				'cName'=>$pageName,
 				'cHandle'=>$pageHandle
@@ -93,52 +43,76 @@ class PageTest extends PHPUnit_Framework_TestCase {
 			$this->fail('Added a page to a non-page');
 		}
 
-		$this->pageAdd = $home->add($ct,array(
+		$page = $home->add($ct,array(
 			'uID'=>1,
 			'cName'=>$pageName,
 			'cHandle'=>$pageHandle
 		));
 
-		$parentID = $this->pageAdd->getCollectionParentID();
+		$parentID = $page->getCollectionParentID();
 
-		$this->assertInstanceOf('Page',$this->pageAdd);
+		$this->assertInstanceOf('Page',$page);
 		$this->assertEquals($parentID, HOME_CID);
 
-		$this->assertSame($pageName,$this->pageAdd->getCollectionName());
-		$this->assertSame($pageHandle, $this->pageAdd->getCollectionHandle());
-		$this->assertSame('/'.$pageHandle, $this->pageAdd->getCollectionPath());
+		$this->assertSame($pageName,$page->getCollectionName());
+		$this->assertSame($pageHandle, $page->getCollectionHandle());
+		$this->assertSame('/'.$pageHandle, $page->getCollectionPath());
+
+		return $page;
 	}
 
 	/**
-		@depends makePages
+		@depends testAddPage
 	 */
-	public function testMovePage() {
-		$parentCID = $this->pageMoveStop->getCollectionID();
+	public function testDeletePage($page) {
+		$cID = $page->getCollectionID();
 
-		$this->pageMove->move($this->pageMoveStop);
+		$page->delete();
 
-		$parentPath = $this->pageMoveStop->getCollectionPath();
-		$handle = $this->pageMove->getCollectionHandle();
-		$path = $this->pageMove->getCollectionPath();
-
-		$this->assertSame($parentPath.'/'.$handle, $path);
-		$this->assertSame($parentCID, $this->pageMove->getCollectionParentID());
-	}
-
-	public function testTrashPage() {
-		$this->pageTrash->moveToTrash();
-
-		$this->assertTrue($this->pageTrash->isInTrash());
-	}
-
-	//this can probably be more thorough
-	public function testDeletePage() {
-		$cID = $this->pageDelete->getCollectionID();
-
-		$this->pageDelete->delete();
 		$noPage = Page::getByID($cID);
 
 		$this->assertEquals(COLLECTION_NOT_FOUND,$noPage->error); //maybe there is a more certain way to determine this.
 	}
+
+	/**
+		@depends testAddPage
+	 */
+	public function testMovePage($page) {
+		Loader::model('page');
+		Loader::model('collection_types');
+		$ct = CollectionType::getByHandle('left_sidebar'); //everything's got a default..
+		$this->assertInstanceOf('CollectionType', $ct); //kind of weird to check this but hey
+
+		$home = Page::getByID(HOME_CID);
+		$pageMoveStop = $home->add($ct,array(
+			'uID'=>1,
+			'cName'=>"Destination",
+			'cHandle'=>'destination'
+		));
+
+		$parentCID = $pageMoveStop->getCollectionID();
+
+		$page->move($pageMoveStop);
+
+		$parentPath = $pageMoveStop->getCollectionPath();
+		$handle = $page->getCollectionHandle();
+		$path = $page->getCollectionPath();
+
+		$this->assertSame($parentPath.'/'.$handle, $path);
+		$this->assertSame($parentCID, $page->getCollectionParentID());
+		$page->delete();
+		$pageMoveStop->delete();
+	}
+
+	/**
+		@depends testAddPage
+	 */
+	public function testTrashPage($page) {
+		$page->moveToTrash();
+
+		$this->assertTrue($page->isInTrash());
+		$page->delete();
+	}
+
 	
 }
