@@ -2,7 +2,7 @@
 class DateHelperTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var TextHelper
+     * @var DateHelper
      */
     protected $object;
     
