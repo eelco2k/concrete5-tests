@@ -25,6 +25,7 @@ require(DIR_BASE . '/concrete/dispatcher.php');
 
 // login the admin
 User::getByUserID(1, true);
+Log::addEntry('bootsrapped','unit tests');
 
 ?>
 
