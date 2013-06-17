@@ -20,19 +20,7 @@ class PageTest extends PHPUnit_Framework_TestCase {
 		return $page;
 	}
 
-	function pageData(){
-		Loader::model('page');
-		Loader::model('collection_types');
-		$data['ct'] = CollectionType::getByHandle('left_sidebar'); //everything's got a default..
-		$data['home'] = Page::getByID(HOME_CID);
-		return $data;
-	}
-
-	//this one actually has two tests in it:
-	// - does the page fail for bad adds
-	// - does it pass for good ones.
-	// it should be its own test when the suite gets built, maybe.
-	public function testAddPage() {
+	public function testPageOperations() {
 		Loader::model('page');
 		Loader::model('collection_types');
 		$ct = CollectionType::getByHandle('left_sidebar'); //everything's got a default..
@@ -59,11 +47,7 @@ class PageTest extends PHPUnit_Framework_TestCase {
 			$this->fail('Added a page to a non-page');
 		}
 
-		$page = $home->add($ct,array(
-			'uID'=>1,
-			'cName'=>$pageName,
-			'cHandle'=>$pageHandle
-		));
+		$page = self::createPage($pageHandle,$pageName);
 
 		$parentID = $page->getCollectionParentID();
 
@@ -73,48 +57,32 @@ class PageTest extends PHPUnit_Framework_TestCase {
 		$this->assertSame($pageName,$page->getCollectionName());
 		$this->assertSame($pageHandle, $page->getCollectionHandle());
 		$this->assertSame('/'.$pageHandle, $page->getCollectionPath());
-		$page->delete(); //I suppose this is technically on faith here
-	}
+		//now we know adding pages works.
 
-	//public function testDeletePage() {
-		//$page = $this->createPage('delete_page','Delete This');
-		//$this->assertInstanceOf('Page',$page);
-		//$cID = $page->getCollectionID();
-
-		//$parentID = $page->getCollectionParentID();
-
-		//$page->delete();
-
-		//$noPage = Page::getByID($cID);
-
-		//$this->assertEquals(COLLECTION_NOT_FOUND,$noPage->error); //maybe there is a more certain way to determine this.
-	//}
-
-	public function testMovePage() {
-		$page = $this->createPage('move_page',"Move This");
-		$destination = $this->createPage('destination',"Destination");
+		$destination = self::createPage('destination',"Destination");
 
 		$parentCID = $destination->getCollectionID();
 
-		//$page->move($destination,false);
+		$page->move($destination,false);
 		$parentPath = $destination->getCollectionPath();
 		$handle = $page->getCollectionHandle();
 		$path = $page->getCollectionPath();
 
 		$this->assertSame($parentPath.'/'.$handle, $path);
 		$this->assertSame($parentCID, $page->getCollectionParentID());
+		//now we know that moving pages works
+
+		$page->moveToTrash();
+		$this->assertTrue($page->isInTrash());
+		//stuff is going to the trash
+
+		$cID = $page->getCollectionID();
 		$page->delete();
+		$noPage = Page::getByID($cID);
+		$this->assertEquals(COLLECTION_NOT_FOUND,$noPage->error); //maybe there is a more certain way to determine this.
+		//now we know deleting pages works
+
 		$destination->delete();
+		//clean up the destination page
 	}
-
-	public function testTrashPage() {
-		$trashPage = self::createPage('trash_page',"Trash This");
-		$parentID = $trashPage->getCollectionParentID();
-		$trashPage->moveToTrash();
-
-		$this->assertTrue($trashPage->isInTrash());
-		$trashPage->delete();
-	}
-
-	
 }
