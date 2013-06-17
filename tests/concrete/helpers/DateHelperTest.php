@@ -111,9 +111,7 @@ class DateHelperTest extends PHPUnit_Framework_TestCase
                             $this->object->timeSince(time() - (1 * $days + 1 * $minutes)));
         $this->assertEquals("2 days, 2 hours",
                             $this->object->timeSince(time() - (2 * $days + 2 * $hours),1));
-        
-        // time is long ago
-        $longago = time() - (367 * $days);
-        $this->assertEquals(date(DATE_APP_GENERIC_MDY,$longago), $this->object->timeSince($longago));
+        $this->assertEquals('1 year',
+                            $this->object->timeSince(time() - (367 * $days)));
     }
 }
