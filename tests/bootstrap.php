@@ -10,6 +10,7 @@ error_reporting(E_ERROR | E_WARNING | E_USER_ERROR);
 
 define('C5_EXECUTE', true);
 define('DIR_BASE', dirname(__FILE__) . '/../web');
+define('DIR_FIXTURES', dirname(__FILE__) . '/../fixtures');
 
 //causes dispatcher to skip the page rendering
 define('C5_ENVIRONMENT_ONLY', true);
