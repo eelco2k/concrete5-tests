@@ -1,8 +1,6 @@
 <?php
 
 class PageTest extends PHPUnit_Framework_TestCase {
-	protected $ct;
-	protected $home;
 
 	private static function createPage($handle, $name) {
 		Loader::model('page');
@@ -63,7 +61,7 @@ class PageTest extends PHPUnit_Framework_TestCase {
 
 		$parentCID = $destination->getCollectionID();
 
-		$page->move($destination,false);
+		$page->move($destination);
 		$parentPath = $destination->getCollectionPath();
 		$handle = $page->getCollectionHandle();
 		$path = $page->getCollectionPath();
