@@ -104,7 +104,7 @@ class PageTest extends PHPUnit_Framework_TestCase {
 	public function pageNames() {
 		return array(
 			array('normal page',false),
-			array("awesome page's #69420 !!! SO COOL",false),
+			array("awesome page's #69420 !!1! SO COOL",false),
 			array('niño borracho',false),
 			array('雷鶏',true)
 		);
