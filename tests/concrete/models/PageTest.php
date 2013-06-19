@@ -2,7 +2,7 @@
 
 class PageTest extends PHPUnit_Framework_TestCase {
 
-	private static function createPage($handle, $name) {
+	private static function createPage($name, $handle=null) {
 		Loader::model('page');
 		Loader::model('collection_types');
 		$ct = CollectionType::getByHandle('left_sidebar'); //everything's got a default..
@@ -14,7 +14,6 @@ class PageTest extends PHPUnit_Framework_TestCase {
 			'cName'=>$name,
 			'cHandle'=>$handle
 		));
-
 		return $page;
 	}
 
@@ -45,7 +44,7 @@ class PageTest extends PHPUnit_Framework_TestCase {
 			$this->fail('Added a page to a non-page');
 		}
 
-		$page = self::createPage($pageHandle,$pageName);
+		$page = self::createPage($pageName,$pageHandle);
 
 		$parentID = $page->getCollectionParentID();
 
@@ -57,7 +56,7 @@ class PageTest extends PHPUnit_Framework_TestCase {
 		$this->assertSame('/'.$pageHandle, $page->getCollectionPath());
 		//now we know adding pages works.
 
-		$destination = self::createPage('destination',"Destination");
+		$destination = self::createPage("Destination");
 
 		$parentCID = $destination->getCollectionID();
 
@@ -82,5 +81,32 @@ class PageTest extends PHPUnit_Framework_TestCase {
 
 		$destination->delete();
 		//clean up the destination page
+	}
+
+	/**
+	 *  @dataProvider pageNames
+	 */
+	public function testPageNames($name, $special) {
+		$page = self::createPage($name);
+		$parentID = $page->getCollectionParentID();
+		$this->assertSame($page->getCollectionName(), $name);
+		$th = Loader::helper('text');
+		if(!$special) {
+			$this->assertSame($page->getCollectionPath(), '/'.$th->urlify($name));
+			$this->assertSame($page->getCollectionHandle(), $th->urlify($name));
+		} else {
+			$this->assertSame($page->getCollectionPath(), '/'.(string)$page->getCollectionID());
+			$this->assertSame($page->getCollectionHandle(), '');
+		}
+		$page->delete();
+	}
+
+	public function pageNames() {
+		return array(
+			array('normal page',false),
+			array("awesome page's #69420 !!! SO COOL",false),
+			array('niño borracho',false),
+			array('雷鶏',true)
+		);
 	}
 }
