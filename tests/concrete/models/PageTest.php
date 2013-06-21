@@ -109,4 +109,20 @@ class PageTest extends PHPUnit_Framework_TestCase {
 			array('雷鶏',true)
 		);
 	}
+
+	public function testPageDuplicate() {
+		$page = self::createPage('double vision');
+		$home = Page::getByID(HOME_CID);
+
+		$newPage = $page->duplicate($home);
+		$realNewPage = Page::getByID($newPage->getCollectionID(),'ACTIVE');
+
+		$this->assertNotEquals($page->getCollectionID(),$realNewPage->getCollectionID());
+		$this->assertEquals($page->getCollectionPath().'-2',$realNewPage->getCollectionPath());
+		$this->assertEquals($page->getCollectionName().' 2',$realNewPage->getCollectionName());
+
+		$page->delete();
+		$realNewPage->delete();
+	}
+
 }
