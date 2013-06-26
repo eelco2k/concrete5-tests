@@ -26,6 +26,7 @@ class PageAttributeExistenceTest extends PHPUnit_Framework_TestCase {
 		$page = Page::getByPath('/about');
 
 		$page->setAttribute($handle,$second);
+		$page = Page::getByID($page->getCollectionID());
 		$page->reindex();
 		$attribute = $page->getAttribute($handle);
 	
@@ -33,6 +34,20 @@ class PageAttributeExistenceTest extends PHPUnit_Framework_TestCase {
 			$this->assertSame($attribute,$secondStatic);
 		} else {
 			$this->assertSame($attribute,$second);
+		}
+	}
+
+	/**
+	 *  @dataProvider commonAttributeHandles
+	 */
+	public function testUnsetCommonAttributes($handle) {
+		$page = Page::getByPath('/about');
+		$ak = CollectionAttributeKey::getByHandle($handle);
+		$page->clearAttribute($ak);
+
+		$cav = $page->getAttributeValueObject($ak);
+		if(is_object($cav)) {
+			$this->fail(t("Page::clearAttribute did not delete '%s'.",$handle));
 		}
 	}
 
@@ -78,6 +93,19 @@ class PageAttributeExistenceTest extends PHPUnit_Framework_TestCase {
 				'Fun Page',
 				'Great Page'
 			)
+		);
+	}
+
+	public function commonAttributeHandles() {
+		return array(
+			array('exclude_nav'),
+			array('exclude_page_list'),
+			array('exclude_search_index'),
+			array('exclude_sitemapxml'),
+			array('header_extra_content'),
+			array('meta_keywords'),
+			array('meta_description'),
+			array('meta_title')
 		);
 	}
 }
