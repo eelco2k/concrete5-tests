@@ -4,6 +4,9 @@
 		<testsuite name="page_model">
 			<file>tests/concrete/models/PageTest.php</file>
 		</testsuite>
+		<testsuite name="page_attributes_exist">
+			<file>tests/concrete/models/PageAttributesExistenceTest.php</file>
+		</testsuite>
 		<testsuite name="all_models">
 			<directory>tests/concrete/models/</directory>
 		</testsuite>
