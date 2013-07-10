@@ -34,8 +34,10 @@ class DateHelperTest extends PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         // delete all directories that were created in setUp()
-        foreach ($this->deleteDirs as $dir) {
-            self::delTree($dir); 
+        if (! empty($this->deleteDirs)) {
+            foreach ($this->deleteDirs as $dir) {
+                self::delTree($dir); 
+            }
         }
     }
 
