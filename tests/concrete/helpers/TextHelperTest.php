@@ -56,7 +56,7 @@ class TextHelperTest extends PHPUnit_Framework_TestCase
     
     public function testPreventWidows()
     {
-    	$nbsp = mb_convert_encoding('&nbsp;', 'UTF-8', 'HTML-ENTITIES');
+    	$nbsp = mb_convert_encoding('&nbsp;', APP_CHARSET, 'HTML-ENTITIES');
     	$this->assertEquals("This is a simple test" . $nbsp . "case",
     						$this->object->preventWidows("This is a simple test case"));
     	$this->assertEquals("This is",
@@ -64,7 +64,7 @@ class TextHelperTest extends PHPUnit_Framework_TestCase
     	$this->assertEquals("This_is",
     						$this->object->preventWidows("This_is"));
     	$this->assertEquals("This is" . $nbsp . "test",
-    						$this->object->preventWidows("This is 		\n  \c\l  	 test"));
+    						$this->object->preventWidows("This is 		\n   	 test"));
     }
 
 }
